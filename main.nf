@@ -1,4 +1,5 @@
 include { SAMTOOLS_INDEX } from './modules/nf-core/samtools/index/main'
+include { IVAR_TRIM } from './modules/nf-core/ivar/trim/main'
 
 workflow {
     main:
@@ -16,9 +17,17 @@ workflow {
         error "Please specify either --samplesheet samplesheet.csv or --bam 'data/*.bam'"
     }
     bam_ch | SAMTOOLS_INDEX
-
-    bam_ch
+    bam_indexed_ch = bam_ch
     | join(SAMTOOLS_INDEX.out.index)
-    | view
 
+    primer_ch = channel.fromPath(params.primers, checkIfExists: true)
+
+    ivar_trim_input = bam_indexed_ch | combine(primer_ch)
+
+    IVAR_TRIM(
+      bam_indexed_ch,
+      ivar_trim_input | map {n -> n.get(3)}
+    )
+
+    IVAR_TRIM.out.bam | view
 }
