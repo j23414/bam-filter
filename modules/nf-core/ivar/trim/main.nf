@@ -12,7 +12,7 @@ process IVAR_TRIM {
     path bed
 
     output:
-    tuple val(meta), path("*.bam"), emit: bam
+    tuple val(meta), path("${bam.baseName}_trimmed.bam"), emit: bam
     tuple val(meta), path('*.log'), emit: log
     tuple val("${task.process}"), val('ivar'), eval("ivar version | sed -n 's|iVar version \\(.*\\)|\\1|p'"), emit: versions_ivar, topic: versions
 
@@ -27,7 +27,7 @@ process IVAR_TRIM {
         ${args} \\
         -i ${bam} \\
         -b ${bed} \\
-        -p ${prefix} \\
+        -p ${bam.baseName}_trimmed \\
         > ${prefix}.ivar.log
     """
 
