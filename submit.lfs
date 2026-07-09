@@ -1,0 +1,23 @@
+#!/bin/bash
+
+#BSUB -n 2
+#BSUB -o out.%J
+#BSUB -e err.%J
+#BSUB -J PRIMER_TRIM
+#BSUB -N
+###BSUB -u someone@somewhere.com
+
+# Please do not remove this line
+source /etc/bashrc.modules
+
+# Load Nextflow dependencies
+source /home/jchang99/.bashrc
+conda activate nf-env
+
+module load htslib/1.22.1
+module load samtools/1.15.1
+
+nextflow run bam-filter/main.nf \
+  --samplesheet bam_samplesheet.csv \
+  --primers "reference/primers.bed" \
+  -profile stjude,conda
