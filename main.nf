@@ -16,10 +16,13 @@ process SAMTOOLS_FILTER {
 
   script:
   """
-  samtools sort -n --threads ${task.cpus - 1} ${bam} \
-    | samtools fixmate -m -@ 2 - - \
-    | samtools sort --write-index -@ 2 - \
-    | samtools markdup --write-index -@ 2 - ${bam.baseName}_filtered.bam
+  samtools view \
+    -u -F 2308 \
+    -@ ${task.cpus} \
+    ${bam} \
+  | samtools sort \
+    -@ ${task.cpus} \
+    -o ${bam.baseName}_filtered.bam
   """
 }
 
@@ -81,5 +84,6 @@ workflow {
       ivar_trim_input | map {n -> n.get(3)}
     )
 
-    IVAR_TRIM.out.bam | SAMTOOLS_FILTER | SAMTOOLS_COVERAGE
+    IVAR_TRIM.out.bam | SAMTOOLS_FILTER
+    SAMTOOLS_FILTER.out.bam | SAMTOOLS_COVERAGE
 }
