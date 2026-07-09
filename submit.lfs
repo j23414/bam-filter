@@ -20,4 +20,4 @@ module load samtools/1.15.1
 nextflow run bam-filter/main.nf \
   --samplesheet bam_samplesheet.csv \
   --primers "reference/primers.bed" \
-  -profile stjude,conda
+  -profile stjude
