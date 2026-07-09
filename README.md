@@ -16,3 +16,14 @@ nextflow run j23414/bam-filter \
   --outdir "filter-results" \
   -profile stjude
 ```
+
+
+## Optional: post-process merging for coverage tables
+
+```
+# (option A) Just get table of coverage
+cat filter-results/samtools_coverage/*tophit* > all-top-coverage.tsv
+python bam-filter/bin/coverage_to_wide.py \
+  --top-coverage all-top-coverage.tsv \
+  --merged results-coverage.tsv
+```
