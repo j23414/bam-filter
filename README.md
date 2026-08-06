@@ -6,6 +6,8 @@ A modular workflow for filtering bam alignment data and summary statistics prior
 * Filtering unmapped or multi-mapped reads
 * (optional) Masking duplicates
 
+![](diagram.png)
+
 ## Usage
 
 ```

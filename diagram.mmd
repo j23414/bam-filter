@@ -1,0 +1,41 @@
+%%metro title: j23414/bam-filter
+%%metro line_order: definition
+%%metro mode: light
+%%metro line: bam | BAM | #22c55e
+%%metro line: bed | Primer BED | #60a5fa
+%%metro line: txt | TXT | #ecb132
+
+graph LR
+
+    subgraph input [Input]
+        bam["Aligned BAM files"]
+        primers["Primer BED"]
+    end
+
+    subgraph trimming [Primer Trimming]
+        bamindex["samtools index"]
+        trim["ivar trim"]
+    end
+
+    subgraph filtering [Alignment Filtering]
+        filter["samtools filter"]
+        filtered["Filtered BAM"]
+    end
+
+    subgraph coverage [Coverage Summary]
+        coverage["samtools coverage"]
+        coverage_tsv["Coverage Summary TSV"]
+        tophit["Top-hit TSV"]
+    end
+
+    bam -->|bam| bamindex
+    bamindex -->|bam| trim
+    primers -->|bed| trim
+
+    trim -->|bam| filter
+    filter -->|bam| filtered
+
+    filtered -->|bam| coverage
+
+    coverage -->|txt| coverage_tsv
+    coverage -->|txt| tophit
