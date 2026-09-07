@@ -1,4 +1,4 @@
-include { SAMTOOLS_INDEX} from './modules/nf-core/samtools/index/main'
+include { SAMTOOLS_INDEX } from './modules/nf-core/samtools/index/main'
 include { IVAR_TRIM } from './modules/nf-core/ivar/trim/main'
 
 process SAMTOOLS_FILTER {
