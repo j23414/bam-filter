@@ -15,14 +15,14 @@ process SAMTOOLS_FILTER {
   tuple val(meta), path("${bam.baseName}_filtered.bam"), emit: bam
 
   script:
+  def args1 = task.ext.args1 ?: ''
+  def args2 = task.ext.args2 ?: ''
   """
-  samtools view \
-    -u -F 2308 \
-    -@ ${task.cpus} \
-    ${bam} \
-  | samtools sort \
-    -@ ${task.cpus} \
-    -o ${bam.baseName}_filtered.bam
+  samtools \\
+    ${args1} \\
+    ${bam} \\
+    ${args2} \\
+    ${bam.baseName}_filtered.bam
   """
 }
 
