@@ -28,7 +28,7 @@ process IVAR_TRIM {
         -i ${bam} \\
         -b ${bed} \\
         -p ${bam.baseName}_trimmed \\
-        > ${prefix}.ivar.log
+        &> ${prefix}.ivar.log
     """
 
     stub:
