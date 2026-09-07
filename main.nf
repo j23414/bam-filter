@@ -3,7 +3,7 @@ include { IVAR_TRIM } from './modules/nf-core/ivar/trim/main'
 
 process SAMTOOLS_FILTER {
     tag "${meta.id}"
-    label 'process_low'
+    label 'process_medium'
 
     conda "./modules/nf-core/samtools/index/environment.yml"
     container "${workflow.containerEngine in ['singularity', 'apptainer']
@@ -21,8 +21,7 @@ process SAMTOOLS_FILTER {
   samtools \\
     ${args1} \\
     ${bam} \\
-    ${args2} \\
-    ${bam.baseName}_filtered.bam
+    ${args2} ${bam.baseName}_filtered.bam
   """
 }
 
