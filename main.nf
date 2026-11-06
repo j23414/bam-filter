@@ -30,28 +30,28 @@ workflow {
     // Load bam alignments
     if (params.samplesheet) {
       bam_ch = channel.fromPath(params.samplesheet)
-        | splitCsv(header: true)
-        | map { row ->
+        .splitCsv(header: true)
+        .map { row ->
             tuple([id: row.sample], [file(row.bam)])
           }
     } else if (params.bam) {
         bam_ch = channel.fromPath(params.bam, checkIfExists: true)
-          | map { bamfile -> tuple([id: bamfile.baseName], bamfile) }
+          .map { bamfile -> tuple([id: bamfile.baseName], bamfile) }
     } else {
         error "Please specify either --samplesheet samplesheet.csv or --bam 'data/*.bam'"
     }
-    bam_ch | SAMTOOLS_INDEX
+    SAMTOOLS_INDEX(bam_ch)
     bam_indexed_ch = bam_ch
-    | join(SAMTOOLS_INDEX.out.index)
+    .join(SAMTOOLS_INDEX.out.index)
 
     primer_ch = channel.fromPath(params.primers, checkIfExists: true)
 
-    ivar_trim_input = bam_indexed_ch | combine(primer_ch)
+    ivar_trim_input = bam_indexed_ch.combine(primer_ch)
 
     IVAR_TRIM(
       bam_indexed_ch,
-      ivar_trim_input | map {n -> n.get(3)}
+      ivar_trim_input.map {n -> n.get(3)}
     )
 
-    IVAR_TRIM.out.bam | SAMTOOLS_FILTER
+    SAMTOOLS_FILTER(IVAR_TRIM.out.bam)
 }
