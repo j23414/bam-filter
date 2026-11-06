@@ -67,7 +67,7 @@ workflow {
     SAMTOOLS_FILTER.out.bam
     .map { meta, bam ->
       def row = new LinkedHashMap(meta.samplesheet)
-      row.bam = "${params.outdir}/samtools_filter/${bam.fileName}"
+      row.bam = "samtools_filter/${bam.fileName}"
       row.values().join(',')
     }
     .collectFile(
