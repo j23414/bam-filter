@@ -32,7 +32,7 @@ workflow {
       bam_ch = channel.fromPath(params.samplesheet)
         .splitCsv(header: true)
         .map { row ->
-            tuple([id: row.sample], [file(row.bam)])
+            tuple([id: row.sample, samplesheet: row], [file(row.bam)])
           }
     } else if (params.bam) {
         bam_ch = channel.fromPath(params.bam, checkIfExists: true)
@@ -54,4 +54,16 @@ workflow {
     )
 
     SAMTOOLS_FILTER(IVAR_TRIM.out.bam)
+
+    SAMTOOLS_FILTER.out.bam
+    .map { meta, bam ->
+      def row = new LinkedHashMap(meta.samplesheet)
+      row.bam = "${params.outdir}/samtools_filter/${bam.fileName}"
+      row.values().join(',')
+    }
+    .collectFile(
+      name: "${params.outdir}/processed_samplesheet.csv",
+      seed: "sample,bam,reference",
+      newLine: true
+    )
 }
