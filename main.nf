@@ -36,7 +36,12 @@ workflow {
           }
     } else if (params.bam) {
         bam_ch = channel.fromPath(params.bam, checkIfExists: true)
-          .map { bamfile -> tuple([id: bamfile.baseName], bamfile) }
+          .map { bamfile -> tuple(
+            [
+              id: bamfile.baseName,
+              samplesheet: [sample: bamfile.baseName, bam: bamfile.fileName]
+            ],
+            bamfile) }
     } else {
         error "Please specify either --samplesheet samplesheet.csv or --bam 'data/*.bam'"
     }
@@ -55,6 +60,10 @@ workflow {
 
     SAMTOOLS_FILTER(IVAR_TRIM.out.bam)
 
+    samplesheet_header = params.samplesheet
+    ? file(params.samplesheet).readLines().first().split(',')
+    : ['sample','bam']
+
     SAMTOOLS_FILTER.out.bam
     .map { meta, bam ->
       def row = new LinkedHashMap(meta.samplesheet)
@@ -63,7 +72,7 @@ workflow {
     }
     .collectFile(
       name: "${params.outdir}/processed_samplesheet.csv",
-      seed: "sample,bam,reference",
+      seed: samplesheet_header.join(','), // sample,bam,reference,...
       newLine: true
     )
 }
